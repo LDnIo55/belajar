@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  pdns-mariadb:
+    build:
+      context: ./pdns-mariadb
+      dockerfile: Dockerfile.pdns-mariadb
+    container_name: pdns-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: powerdns
+      MYSQL_USER: powerdns
+      MYSQL_PASSWORD: powerdnspass
+    volumes:
+      - pdns_data:/var/lib/mysql
+
+  pdns-server:
+    build:
+      context: ./pdns-server
+      dockerfile: Dockerfile.pdns-server
+    container_name: pdns-server
+    depends_on:
+      - pdns-mariadb
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "8081:8081"
+
+  pdns-admin:
+    build:
+      context: ./pdns-admin
+      dockerfile: Dockerfile.pdns-admin
+    container_name: pdns-admin
+    depends_on:
+      - pdns-mariadb
+    ports:
+      - "80:80"
+
+volumes:
+  pdns_data:

@@ -1,0 +1,19 @@
+FROM debian:stable-slim
+
+ENV MYSQL_ROOT_PASSWORD=secret \
+    MYSQL_DATABASE=powerdns \
+    MYSQL_USER=powerdns \
+    MYSQL_PASSWORD=powerdnspass
+
+RUN apt-get update && \
+    apt-get install -y mariadb-server && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY entrypoint.pdns-mariadb.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.pdns-mariadb.sh
+
+VOLUME /var/lib/mysql
+
+EXPOSE 3306
+
+ENTRYPOINT ["entrypoint.pdns-mariadb.sh"]

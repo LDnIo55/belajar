@@ -1,0 +1,18 @@
+FROM debian:stable-slim
+
+RUN apt-get update && \
+    apt-get install -y apache2 php php-mysql libapache2-mod-php unzip wget && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+
+RUN wget https://github.com/poweradmin/poweradmin/archive/refs/tags/v2.1.7.zip && \
+    unzip v2.1.7.zip && \
+    mv poweradmin-2.1.7/* . && \
+    rm -rf v2.1.7.zip poweradmin-2.1.7
+
+COPY config.pdns.inc.php ./inc/config.inc.php
+
+EXPOSE 80
+
+CMD ["apachectl", "-D", "FOREGROUND"]
